@@ -13,18 +13,40 @@ Writing compelling product descriptions at scale is time-consuming for e-commerc
 ---
 ## ✨ Features
 
-- **Persuasive Sales Copy**: Generates detailed and engaging copy tailored to turn visitors into buyers.
-- **Customizable Tone & Audience**: Adjust the voice (e.g., professional, playful, luxury) and target demographic.
-- **SEO & Conversion Optimized**: Focuses on key benefits, features, and search-friendly keywords.
-- **Easy Export**: Quickly copy or export generated descriptions directly into your e-commerce platform (Shopify, WooCommerce, etc.).
+- **Photo-Grounded Copy**: Generates a title, description, and benefit bullets from a single product photo.
+- **Brand-Aware Voice**: Weaves your brand name in naturally without inventing details.
+- **Strict Guardrails**: Never fabricates dimensions, materials, certifications, or other invisible specs.
+- **One-Click Workflow**: Drag & drop, preview, generate, copy, and regenerate on a single screen.
+- **Robust States**: Clear inline feedback for missing images, invalid formats, oversized files, timeouts, and API failures.
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: React / HTML5 / Tailwind CSS
-- **Backend / AI Integration**: Node.js / Python (FastAPI)
-- **AI Model**: Gemini API
+- **Frontend**: React 19 / Vite / Tailwind CSS
+- **Backend**: Python / FastAPI
+- **AI Model**: Gemini 2.5 Flash (`google-genai`)
+
+---
+
+## 🔌 API Contract
+
+`POST /api/generate-description` — `multipart/form-data`
+
+| Field | Type | Rules |
+| :--- | :--- | :--- |
+| `image` | file | JPG, PNG, or WEBP · max 10 MB |
+| `brand` | text | Required · max 80 characters |
+
+```json
+{
+  "title": "Short product title",
+  "description": "Two-paragraph product description",
+  "benefits": ["Grounded benefit one", "Grounded benefit two", "Grounded benefit three"]
+}
+```
+
+`GET /api/health` returns the service status and active model.
 
 ---
 
@@ -32,44 +54,49 @@ Writing compelling product descriptions at scale is time-consuming for e-commerc
 
 ### Prerequisites
 
-- Node.js (v18 or higher) or Python 3.9+
-- API Key for Gemini API
+- Node.js 18+ and npm
+- Python 3.10+ and [uv](https://docs.astral.sh/uv/)
+- A Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey)
 
-### Installation
+### 1. Backend (FastAPI + Gemini)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/product-description-writer.git
-   cd product-description-writer
-   ```
+```bash
+cd server
+uv venv .venv
+uv pip install --python .venv/bin/python -r requirements.txt
+cp .env.example .env        # then add your GEMINI_API_KEY
+.venv/bin/uvicorn main:app --reload --port 8000
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   # or for Python backends:
-   pip install -r requirements.txt
-   ```
+The API is now at `http://127.0.0.1:8000` (`GET /api/health`, `POST /api/generate-description`).
+Set `MOCK_AI=1` in `server/.env` to run the full flow without a Gemini key using demo copy.
 
-3. **Set up Environment Variables:**
-   Create a `.env` file in the root directory and add your API key:
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
+### 2. Frontend (React + Vite + Tailwind)
 
-4. **Run the application:**
-   ```bash
-   npm start
-   # or
-   python app.py
-   ```
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. Vite proxies `/api` requests to the FastAPI server, so no
+frontend environment variables are required.
+
+### Production build
+
+```bash
+cd client && npm run build
+```
+
+Serve `client/dist` behind any static host and point its `/api` route at the FastAPI service.
 
 ---
 
 ## 🎯 Hackathon Rubric Alignment
 
-- **Innovation & Creativity**: Uses context-aware prompt engineering to generate persona-tailored sales copy rather than generic descriptions.
-- **Technical Execution**: Seamless integration of Google's AI APIs with an intuitive, fast user interface.
-- **Practical Impact**: Directly solves a real-world merchant problem by reducing copy creation time from hours to seconds and optimizing for sales conversions.
+- **Innovation & Creativity**: Uses strict visual grounding and brand-aware prompt engineering to produce honest, on-brand copy instead of generic filler.
+- **Technical Execution**: Multimodal Gemini 2.5 Flash integration with a responsive React UI, typed API contract, and resilient error handling.
+- **Practical Impact**: Reduces copy creation time from hours to seconds while protecting merchants from inaccurate product claims.
 
 ---
 
