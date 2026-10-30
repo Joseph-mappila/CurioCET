@@ -208,7 +208,15 @@ def generate_description(image_bytes: bytes, mime_type: str, brand: str) -> dict
         timed_out = "timeout" in name or "deadline" in name or "timeout" in message
         rate_limited = "429" in message or "quota" in message or "resource_exhausted" in message
         auth_failed = "401" in message or "403" in message or "api key" in message or "permission" in message
-        LOGGER.exception("Gemini request failed after %.2fs", time.monotonic() - started)
+        image_unsupported = (
+            "does not support image input" in message
+            or ("cannot read" in message and "image" in message)
+        )
+        LOGGER.exception(
+            "Gemini request failed (model=%s) after %.2fs",
+            MODEL_NAME,
+            time.monotonic() - started,
+        )
         if timed_out:
             raise AIServiceError(
                 "The AI service timed out. Please try again in a moment.",
@@ -222,6 +230,20 @@ def generate_description(image_bytes: bytes, mime_type: str, brand: str) -> dict
         if auth_failed:
             raise AIServiceError(
                 "Gemini rejected the API key. Check GEMINI_API_KEY in server/.env.",
+                unavailable=True,
+            ) from exc
+        if image_unsupported:
+            if MODEL_NAME.startswith("gemini-2.5-flash"):
+                hint = (
+                    "This key or project does not have vision access. "
+                    "Check GEMINI_API_KEY in server/.env, or run with MOCK_AI=1."
+                )
+            else:
+                hint = (
+                    "Set GEMINI_MODEL=gemini-2.5-flash in server/.env and restart the API."
+                )
+            raise AIServiceError(
+                f"The configured model ({MODEL_NAME}) does not accept image input. {hint}",
                 unavailable=True,
             ) from exc
         raise AIServiceError(
