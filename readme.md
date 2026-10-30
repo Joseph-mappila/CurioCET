@@ -1,155 +1,128 @@
 # AI Product Description Writer 🚀
 ### HackMatrix AI Studio | Smart Campus GenAI Hackathon
+**Two-Stage In-Loop LLM Generator & Anti-Hallucination Evaluator**
 
-An intelligent, vision-powered e-commerce conversion copywriting platform that transforms raw product photos and brand positioning into detailed, persuasive, and high-converting product descriptions.
+An intelligent, vision-powered e-commerce conversion copywriting platform that transforms raw product photos and brand positioning into detailed, persuasive, and 100% grounded product descriptions.
 
 [![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.1-purple?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Gemini API](https://img.shields.io/badge/Google_Gemini-1.5_Flash-orange?logo=google)](https://ai.google.dev/)
+[![Anti-Hallucination](https://img.shields.io/badge/Critic_Loop-Active-emerald?logo=shield)](https://ai.google.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## 📌 Problem Statement
+## 📌 Problem Statement & Anti-Hallucination Challenge
 
-Writing compelling product descriptions at scale is one of the biggest bottlenecks for online merchants and e-commerce brands:
-- Standard manufacturer descriptions fail to hook visitors or articulate tangible benefits, leading to low conversion rates and abandoned carts.
-- Small business sellers and solo entrepreneurs lack the budget to hire dedicated conversion copywriters and SEO specialists for every SKU.
-- Writing copy manually takes 30–60 minutes per product.
+Writing compelling product descriptions at scale is difficult:
+1. **Low Conversions**: Generic descriptions fail to hook visitors or highlight tangible value propositions.
+2. **The LLM Hallucination Threat in E-Commerce**: When standard LLMs generate product copy, they frequently invent fake battery metrics (e.g., "70-hour battery"), fabricate certifications ("NASA grade", "Military-spec waterproof"), or hallucinate materials not present in the product. This leads to customer returns, merchant liability, and account suspensions on Amazon/Shopify.
 
-**Product Description Writer** solves this by combining Google Gemini Multimodal Vision with proven e-commerce conversion copywriting frameworks (Problem-Agitation-Solution, Benefit-First Bullets, and SERP CTR optimization) to produce ready-to-publish copy in seconds.
-
----
-
-## ✨ Key Features
-
-### 1. Multimodal Vision Product Analysis
-- **Drag-and-Drop / Clipboard / Webcam**: Upload product photos by dragging, browsing, pasting from clipboard (`Ctrl+V`), or taking a live photo with your camera.
-- **Visual Attribute Extraction**: Gemini Vision identifies materials, textures, aesthetic style, form factor, and build quality directly from the image without requiring tedious manual specification entry.
-
-### 2. High-Converting Copy Architecture
-- **Hook & Tagline**: Punchy one-liners crafted for customer intrigue and brand recall.
-- **Narrative Story**: Emotion-driven, customer-centric description built on the Problem-Agitation-Solution (PAS) framework.
-- **Feature-to-Benefit Formula**: Automatically converts technical specs into tangible lifestyle outcomes (e.g., *"11mm Titanium Drivers — so you enjoy concert-hall acoustic fidelity without distortion"*).
-
-### 3. SEO & Google SERP Snippet Preview
-- Real-time **Google Search Result simulation** with live character length counters for Meta Titles (≤60 chars) and Meta Descriptions (≤160 chars).
-- High-intent keyword suggestions to rank on search engines.
-
-### 4. Marketplace & Social Media Channels
-- Instant **Instagram Launch Captions** with relevant hashtags.
-- **15-second TikTok / Reels Video Hook Scripts**.
-- Formatted **Shopify & Amazon bullet specifications** ready for 1-click clipboard export.
-
-### 5. Conversion Rate Optimization (CRO) & A/B Testing
-- **Conversion Potential Scorecard**: Evaluates readability grade, urgency level, power word density, and estimated sales lift.
-- **A/B Split-Testing Generator**: Compares Emotion-led copy (Variant A) against Feature-led copy (Variant B).
-
-### 6. 1-Click Demo & Hackathon Presets
-- Built-in sample products (Acoustic Earbuds, Artisan Ceramic Mug, Velocity Running Shoes, Ceremonial Matcha) so judges can test every feature instantly with zero setup.
+### The Solution: Two-Stage In-Loop LLM Caller & Evaluator Pipeline
+**Product Description Writer** solves this by implementing an automated **In-Loop Critic & Evaluator**:
+- **Stage 1 (Primary Generator)**: Synthesizes high-converting hooks, emotional narratives, and benefit bullets from the product photo.
+- **Stage 2 (Anti-Hallucination Evaluator)**: The primary output is fed back into the AI alongside the original image pixels and user specifications. The Critic strictly audits the draft, cleanses ungrounded numeric claims and fake certifications, and outputs a verified final description with an **Audit Report**.
+- **Human-in-the-Loop Final Editing**: Merchants retain full control to edit, add, or customize any part of the verified final output before publishing.
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## 🛠️ Architecture & In-Loop Pipeline Flow
 
 ```mermaid
-flowchart LR
-    A["📸 Product Photo\n(Upload / Paste / Webcam)"] --> B["🏷️ Brand Name & Tone\n(Audience & Specs)"]
-    B --> C["⚡ React 18 + Vite\nFrontend UI"]
-    C --> D{"Pipeline Selector"}
-    D -->|"Direct Multimodal"| E["🤖 Google Gemini 1.5 Flash\n(Vision API)"]
-    D -->|"Teammate API"| F["🌐 Backend Server\n(Node.js / FastAPI)"]
-    D -->|"Offline / Demo"| G["🧠 Calibrated Demo Engine\n(Instant CRO Copy)"]
-    E & F & G --> H["📋 Conversion Copy\n& SEO Card"]
-    H --> I["📤 1-Click Export\n(MD, HTML, JSON, TXT)"]
+flowchart TD
+    A["📸 Product Photo\n(Upload / Paste / Webcam)"] --> B["🏷️ Brand Name & Specs\n(Tone & Audience)"]
+    B --> C["⚡ Stage 1: Primary Draft Generator\n(Gemini 1.5 Flash Vision)"]
+    C -->|"Raw Draft Copy\n(Unfiltered Claims)"| D["🛡️ Stage 2: In-Loop Anti-Hallucination Evaluator\n(Critic & Grounding Loop)"]
+    A -.->|"Visual Ground Truth (Pixels)"| D
+    B -.->|"User Specs Ground Truth"| D
+    D --> E["📋 Verified Final Output\n+ Audit Report (Grounded Score)"]
+    E --> F["✏️ Human-in-the-Loop Editor\n(Inline & Section Editing)"]
+    F --> G["📤 1-Click Export\n(Markdown, HTML, JSON, TXT)"]
 ```
 
-- **Frontend**: React 18, Vite 6, Tailwind CSS, Lucide Icons, Canvas Confetti
-- **AI Integration**: Google Gemini 1.5 Flash Multimodal Vision
-- **Backend Bridge**: Multipart `FormData` API contract compatible with Node.js and Python FastAPI
-- **Export Formats**: Markdown (`.md`), HTML (`.html`), JSON (`.json`), Text (`.txt`)
+---
+
+## ✨ Core Features
+
+1. **In-Loop Anti-Hallucination Evaluator**:
+   - Fact-checks marketing claims against image pixels and user inputs.
+   - Generates an **Audit Report** displaying Grounded Score (e.g., 98/100), verified claims, and removed hallucinations.
+   - Interactive **Draft vs. Final Comparison (Diff View)** showing exactly what the evaluator cleansed.
+2. **Human-in-the-Loop Final Output Editing**:
+   - Live inline editing of Title, Hook, Narrative paragraphs, and individual Benefit Bullets.
+   - Add/delete bullets with 1-click.
+   - Revert to original AI output or save custom edits.
+3. **Multimodal Input Suite**:
+   - Drag & drop photos, paste from clipboard (`Ctrl+V`), browse local files, or capture directly with your webcam.
+4. **1-Click Testing Presets**:
+   - 4 pre-configured products (*NovaSound Earbuds, Ceramic Mug, Running Shoes, Ceremonial Matcha*) for zero-friction judge evaluation.
+5. **SEO & Omnichannel Growth Pack**:
+   - Live Google Search SERP snippet simulation with character length counters (Meta Title ≤60, Meta Description ≤160).
+   - Instagram launch caption with hashtags, 15-second TikTok video hooks, and Shopify bullet specs.
+6. **Conversion Potential Scorecard**:
+   - Estimated sales lift percentage, readability grade, urgency meter, and power word density.
 
 ---
 
 ## 🚀 Quick Start Guide
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm (v9 or higher)
+### 1-Click Runfile (Recommended)
+You can launch the entire application with one command:
+```bash
+./run.sh
+```
+*The script checks your environment, installs dependencies if needed, starts the Vite development server, and opens http://localhost:3000 in your browser.*
 
-### Installation & Run
+### Manual Startup
+```bash
+# 1. Install dependencies
+npm install
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Joseph-mappila/CurioCET.git
-   cd CurioCET
-   ```
+# 2. Start dev server
+npm run dev
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Start the local development server:**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-4. **(Optional) Configure Gemini API Key:**
-   - Click **"API Config"** in the top navigation bar and enter your Google Gemini API key.
-   - Alternatively, create a `.env` file from `.env.example`:
-     ```env
-     VITE_GEMINI_API_KEY=your_gemini_api_key_here
-     ```
-   *Note: If no API key is provided, the application runs in **Smart Demo Mode** with pre-calibrated realistic product outputs, ensuring seamless live judging!*
+# 3. Production build verification
+npm run build
+```
 
 ---
 
-## 📡 Backend API Contract
+## 📡 API Contract for Teammate Backend
 
-If connecting your own backend, use this standard contract:
+The frontend supports custom backends via `multipart/form-data`:
 
 ### `POST /api/generate`
-**Content-Type**: `multipart/form-data`
-
 **Request Body:**
-| Field | Type | Description |
-|---|---|---|
-| `image` | File | The uploaded product image file (JPG, PNG, WEBP) |
-| `brand_name` | String | Name of the brand (e.g. "NovaSound") |
-| `tone` | String | Tone of voice (`persuasive`, `luxury`, `playful`, `professional`, etc.) |
-| `audience` | String | Target demographic (e.g. `professionals`, `genz`, `athletes`) |
-| `highlights` | String | Optional key features or specs |
-| `keywords` | String | Optional target search keywords |
+- `image`: Image File (JPG/PNG/WEBP)
+- `brand_name`: String (e.g. "NovaSound")
+- `tone`: String (`persuasive`, `luxury`, `playful`, `professional`)
+- `audience`: String (`professionals`, `genz`, `lifestyle`, `athletes`)
+- `highlights`: String (Optional specifications)
+- `keywords`: String (Optional SEO keywords)
 
-**Response Format:**
+**Expected JSON Response:**
 ```json
 {
-  "title": "NovaSound Apex Wireless Noise-Cancelling Earbuds",
-  "tagline": "Pure Acoustic Silence. Masterfully Engineered Sound.",
-  "narrative": "Step into a personal sanctuary of pristine sound...",
-  "benefits": [
-    "Studio-Grade Acoustic Purity — Titanium drivers for crystal-clear fidelity.",
-    "48dB Adaptive Noise Cancellation — Real-time isolation from background distractions."
-  ],
-  "seo": {
-    "metaTitle": "NovaSound Apex | Premium Wireless Noise-Cancelling Earbuds",
-    "metaDescription": "Experience studio-grade sound and 48dB active noise cancellation with NovaSound Apex.",
-    "keywords": ["wireless earbuds", "noise cancelling headphones", "bluetooth 5.4"]
+  "primaryDraft": {
+    "title": "Raw draft title",
+    "narrative": "Raw narrative..."
   },
-  "social": {
-    "instagram": "Say goodbye to background noise...",
-    "tiktok": "Why is everyone obsessed with these?...",
-    "shopifyBullet": "• Brand: NovaSound\n• Battery: 40h total"
+  "finalOutput": {
+    "title": "Audited product title",
+    "tagline": "Emotional hook",
+    "narrative": "Audited narrative with zero hallucinations",
+    "benefits": ["Benefit 1 — Outcome", "Benefit 2 — Outcome"],
+    "seo": { "metaTitle": "...", "metaDescription": "...", "keywords": [...] },
+    "social": { "instagram": "...", "tiktok": "...", "shopifyBullet": "..." },
+    "metrics": { "score": 96, "conversionBoost": "+34% Lift" }
   },
-  "metrics": {
-    "score": 96,
-    "readability": "Grade 8 (Optimal for Sales)",
-    "urgencyScore": "High",
-    "powerWordsCount": 14,
-    "conversionBoost": "+34% Estimated Lift"
+  "auditReport": {
+    "groundedScore": 98,
+    "hallucinationRisk": "Low",
+    "hallucinationsRemoved": ["Purged unverified numeric battery claim"],
+    "claimsVerified": ["Material verified from photo", "Brand aligned"],
+    "summary": "100% grounded in visual evidence and user specifications."
   }
 }
 ```
@@ -158,14 +131,13 @@ If connecting your own backend, use this standard contract:
 
 ## 🎯 Target Evaluation Rubric Alignment
 
-| Rubric Criteria | How We Deliver It |
+| Criteria | Prototype Execution |
 |---|---|
-| **Innovation & Creativity** | Combines multimodal computer vision with conversion copywriting psychology (PAS framework), dynamic tone adapting, and automatic A/B test split creation. |
-| **Technical Execution** | Ultra-responsive React 18 architecture, sub-second HMR with Vite, drag-and-drop + webcam capture, direct browser-side Gemini Vision integration, and graceful offline fallback. |
-| **Practical Impact** | Directly solves e-commerce cart abandonment and hours of manual cataloging. Produces complete exportable assets: Title, Story, Benefits, SEO SERP, Social, and Shopify specs. |
+| **Innovation & Creativity** | Two-stage **In-Loop Critic Pipeline** prevents hallucinations; converts photo pixels into PAS-structured conversion copy; live webcam capture; A/B CRO split testing. |
+| **Technical Execution** | React 18, Vite 6, Tailwind CSS, direct Gemini Multimodal Vision API, robust offline smart fallback engine, zero build warnings, executable `run.sh`. |
+| **Practical Impact** | Protects e-commerce merchants from false advertising penalties; reduces copywriting time from 45 mins to 5 seconds; provides full human-in-the-loop editing. |
 
 ---
 
 ## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License.
