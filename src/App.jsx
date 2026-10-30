@@ -6,7 +6,7 @@ import ConfigurationForm from './components/ConfigurationForm';
 import ResultsPanel from './components/ResultsPanel';
 import SettingsModal from './components/SettingsModal';
 import { generateProductDescription } from './services/geminiService';
-import { Sparkles, AlertCircle } from 'lucide-react';
+import { Sparkles, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -22,7 +22,8 @@ export default function App() {
   const [keywords, setKeywords] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  const [currentStage, setCurrentStage] = useState(null);
+  const [pipelineResult, setPipelineResult] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [apiKey, setApiKey] = useState(() => {
@@ -57,7 +58,6 @@ export default function App() {
     setImageFile(file);
     setImagePreview(dataUrl);
 
-    // Extract base64 and MIME type
     if (dataUrl && dataUrl.startsWith('data:')) {
       const mime = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';'));
       const base64 = dataUrl.substring(dataUrl.indexOf(',') + 1);
@@ -79,9 +79,8 @@ export default function App() {
     setAudience(preset.audience);
     setHighlights(preset.highlights);
     setKeywords(preset.keywords);
-    setResult(preset.mockResult);
+    setPipelineResult(preset.mockResult);
 
-    // Convert sample image URL to base64 so direct Gemini can analyze it too
     fetch(preset.imageUrl)
       .then((res) => res.blob())
       .then((blob) => {
@@ -110,7 +109,12 @@ export default function App() {
     }
 
     setIsLoading(true);
-    setResult(null);
+    setPipelineResult(null);
+    setCurrentStage({
+      stage: 1,
+      label: "Stage 1: Primary Draft Generator",
+      detail: "Synthesizing creative hooks and sales angles..."
+    });
 
     try {
       const generated = await generateProductDescription({
@@ -125,21 +129,35 @@ export default function App() {
         apiKey,
         backendUrl,
         forceMock,
+        onStageChange: (stageInfo) => {
+          setCurrentStage(stageInfo);
+        }
       });
 
-      setResult(generated);
+      setPipelineResult(generated);
       confetti({
         particleCount: 70,
         spread: 70,
         origin: { y: 0.6 },
         colors: ['#6366f1', '#06b6d4', '#22c55e', '#f59e0b'],
       });
-      showToast('Product description successfully generated!');
+      showToast('Two-stage generation complete! Evaluated for anti-hallucination.');
     } catch (err) {
       console.error('Generation error:', err);
       showToast(`Error: ${err.message || 'Failed to generate copy'}`);
     } finally {
       setIsLoading(false);
+      setCurrentStage(null);
+    }
+  };
+
+  const handleUpdateFinalOutput = (updatedFinal) => {
+    if (pipelineResult) {
+      setPipelineResult({
+        ...pipelineResult,
+        finalOutput: updatedFinal,
+      });
+      showToast('Edits successfully saved to final output!');
     }
   };
 
@@ -170,20 +188,23 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
-        {/* Hackathon Hero Banner */}
+        {/* Hackathon Hero Banner with Anti-Hallucination Architecture Callout */}
         <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-slate-900/60 border border-indigo-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30">
-                1:1 Smart Campus Assignment
+                In-Loop Evaluator Architecture
               </span>
-              <span className="text-xs text-slate-400">Developer Tools & GenAI</span>
+              <span className="text-xs text-emerald-400 flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Anti-Hallucination Grounding
+              </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-              AI Product Description Writer
+              AI Product Description Writer & Critic Loop
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
-              Turn product photos and brand positioning into detailed, high-converting sales copy designed to improve online e-commerce conversions.
+              Stage 1 drafts persuasive sales copy; an In-Loop LLM Evaluator audits claims against product photos to eliminate hallucinations before final delivery.
             </p>
           </div>
 
@@ -236,14 +257,15 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right Column: Results & Analytics (7 Cols) */}
+          {/* Right Column: Results & Evaluator Panel (7 Cols) */}
           <div className="lg:col-span-7">
             <ResultsPanel
-              result={result}
-              setResult={setResult}
+              pipelineResult={pipelineResult}
+              onUpdateFinalOutput={handleUpdateFinalOutput}
               brandName={brandName}
               tone={tone}
               isLoading={isLoading}
+              currentStage={currentStage}
               onRegenerate={handleGenerate}
             />
           </div>
@@ -274,7 +296,7 @@ export default function App() {
       <footer className="border-t border-slate-800/80 bg-[#070A11] py-4 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>CurioCET • TCS HackMatrix AI Studio Prototype</span>
-          <span>Target Evaluation: Innovation & Creativity • Technical Execution • Practical Impact</span>
+          <span>In-Loop Anti-Hallucination Pipeline • Evaluator & Grounding Engine</span>
         </div>
       </footer>
     </div>
