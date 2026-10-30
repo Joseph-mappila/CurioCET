@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-base text-slate-400 font-sans;
+    background-image:
+      radial-gradient(60rem 30rem at 15% -10%, rgba(99, 102, 241, 0.16), transparent 60%),
+      radial-gradient(45rem 25rem at 95% 0%, rgba(20, 184, 166, 0.1), transparent 55%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-accent/40 text-white;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-slate-700;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-lg border border-line bg-surface shadow-xl;
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+
+  .btn-primary {
+    @apply focus-ring inline-flex items-center justify-center gap-2 rounded-md bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-indigo-600 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-outline {
+    @apply focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-slate-700 bg-transparent px-4 py-2.5 text-sm font-medium text-slate-300 transition-all hover:border-teal-400 hover:text-teal-300 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .skeleton {
+    @apply rounded-md bg-gradient-to-r from-slate-700/40 via-slate-600/50 to-slate-700/40 bg-[length:200%_100%] animate-shimmer;
+  }
+}
